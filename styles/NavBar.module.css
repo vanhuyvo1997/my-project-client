@@ -1,0 +1,37 @@
+.nav-bar {
+    display: block;
+    background-color: black;
+    padding: 0px 15px;
+    position: sticky;
+    height: 43px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.greeting{
+    margin: 0 15px;
+    color: white;
+    font-size: 0.7em;
+    position: relative;
+    line-height: 360%;
+}
+
+.avatar{
+    position: absolute;
+    top: 4px;
+    left: -35px;
+}
+
+.clearfix::after{
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.logo{
+   display: inline;
+}
+
+.nav-item{
+    margin-top: 2px;
+    float:right;
+}
