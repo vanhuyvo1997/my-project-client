@@ -8,6 +8,7 @@ import { useState } from "react";
 import { isValidEmail } from "@my-project/util/validate-utils";
 import { NotifyType } from "@my-project/components/notification/notification";
 import { onDeleteNotifycation } from "@my-project/util/notification-utils";
+import jwtDecode from "jwt-decode";
 
 export default function SignIn() {
   const [username, setUsername] = useState("");
@@ -17,8 +18,6 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const router = useRouter();
-
-  const navigateToRegister = () => router.push("/sign-up");
 
   const deleteNotification = (e) =>
     onDeleteNotifycation(e, notifications, setNotifications);
@@ -56,11 +55,7 @@ export default function SignIn() {
           let data = await respone.json();
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("refreshToken", data.refreshToken);
-          notifications.push({
-            type: NotifyType.SUCCESS,
-            message: "Ok",
-            onDelete: deleteNotification,
-          });
+          jwtDecode(data.accessToken).role === 'USER'&&router.push("my-projects");
         } else {
           throw new Error("Failed to login, user or password is invalid");
         }
@@ -79,14 +74,14 @@ export default function SignIn() {
   return (
     <Layout
       cornerButtonContent="Register"
-      onClickCornerButton={navigateToRegister}
+      onClickCornerButton={() => router.push("sign-up")}
       isLoading={isLoading}
       notifications={notifications}
     >
       <div className="sign-in-and-up-container">
         <SignInAndUpFrom
           title="Sign in with your account"
-          onClickBack={navigateToRegister}
+          onClickBack={() => router.push("sign-up")}
           backButtonContent="To resgister"
           nextButtonContent="Sign in"
           onSubmit={signIn}
