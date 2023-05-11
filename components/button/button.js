@@ -1,4 +1,4 @@
-import styles from "styles/Button.module.css";
+import styles from "./Button.module.css";
 import Image from "next/image";
 /* 
 
@@ -16,11 +16,12 @@ export default function Button({
     content,
     onClick,
     type,
+    submit,
 }){
 
 
     return (
-            <button className={styles[type]}  onClick={onClick} >
+            <button className={styles[type]}  onClick={onClick} type={submit?'submit':'button'}>
                 {paseIconFromType(type)}
                 {content}
             </button>
