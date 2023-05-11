@@ -1,6 +1,6 @@
-import Button, {ButtonType} from "./button";
+import Button, {ButtonType} from "../button/button";
 import Image from "next/image";
-import styles from "styles/NavBar.module.css";
+import styles from "./NavBar.module.css";
 
 
 export default function NavBar({
@@ -16,7 +16,9 @@ export default function NavBar({
                     src="/images/logo.png"
                     width={150}
                     height={42}
-                    alt="logo"/>
+                    alt="logo"
+                    priority={false}
+                    />
                 </div>
 
                 <div className={styles['nav-item']}>
