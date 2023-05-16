@@ -7,6 +7,7 @@ import { useState } from "react";
 import { NotifyType } from "@my-project/components/notification/notification";
 
 import { isValidName, isValidEmail, isValidPassword } from "@my-project/util/validate-utils";
+import { ContainerSize } from "@my-project/components/page-container/page-container";
 
 export default function SignUp() {
   const [validationErrs, setValidationErrs] = useState({});
@@ -98,17 +99,17 @@ export default function SignUp() {
 
   return (
     <Layout
-      cornerButtonContent="Sign in"
+      navBarButtonContent="Sign in"
       onClickCornerButton={navigateToRegister}
       isLoading={isLoading}
       notifications={notifications}
-
+      containerSize={ContainerSize.SMALL}
     >
       <div className="sign-in-and-up-container">
         <SignInAndUpFrom
           onSubmit={handleSubmit}
-          title="Sign you new account"
-          nextButtonContent="Register"
+          title="Sign up your new account"
+          nextButtonContent="Sign up"
           backButtonContent="To sign in"
           onClickBack={navigateToRegister}
         >
