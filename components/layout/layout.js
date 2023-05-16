@@ -2,21 +2,29 @@ import NavBar from "../navbar/nav-bar";
 import Notification from '@my-project/components/notification/notification';
 import { NotifyType } from '@my-project/components/notification/notification';
 import Loading from "../loading/loading";
+import PageContainer, {ContainerSize} from "../page-container/page-container";
 export default function Layout({
   children,
   onClickCornerButton,
-  cornerButtonContent,
+  navBarButtonContent,
+  greetingName,
   isLoading,
   notifications,
+  showGreeting,
+  containerSize
 }) {
   return (
     <>
       <NavBar
         onClickButton={onClickCornerButton}
-        buttonContent={cornerButtonContent}
-        name="Admin"
+        buttonContent={navBarButtonContent}
+        name={greetingName}
+        showGreeting={showGreeting}
+        navBarButtonContent = {navBarButtonContent}
       />
-      <div className="container">{children}</div>
+      <PageContainer size={containerSize}>
+        {children}
+      </PageContainer>
       <div className="notify-container">
         {
           notifications&&notifications.map((e, index)=> <Notification key={index} type={e.type} message={e.message} onDelete={()=>e.onDelete(e)}/>)

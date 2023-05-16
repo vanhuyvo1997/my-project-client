@@ -8,6 +8,8 @@ import { useState } from "react";
 import { isValidEmail } from "@my-project/util/validate-utils";
 import { NotifyType } from "@my-project/components/notification/notification";
 import { onDeleteNotifycation } from "@my-project/util/notification-utils";
+import jwtDecode from "jwt-decode";
+import { ContainerSize } from "@my-project/components/page-container/page-container";
 
 export default function SignIn() {
   const [username, setUsername] = useState("");
@@ -17,8 +19,6 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const router = useRouter();
-
-  const navigateToRegister = () => router.push("/sign-up");
 
   const deleteNotification = (e) =>
     onDeleteNotifycation(e, notifications, setNotifications);
@@ -56,11 +56,11 @@ export default function SignIn() {
           let data = await respone.json();
           localStorage.setItem("accessToken", data.accessToken);
           localStorage.setItem("refreshToken", data.refreshToken);
-          notifications.push({
-            type: NotifyType.SUCCESS,
-            message: "Ok",
-            onDelete: deleteNotification,
-          });
+          jwtDecode(data.accessToken).role === "USER" &&
+            router.push("my-projects");
+
+            jwtDecode(data.accessToken).role === "ADMIN" &&
+            router.push("my-admin");
         } else {
           throw new Error("Failed to login, user or password is invalid");
         }
@@ -78,40 +78,39 @@ export default function SignIn() {
 
   return (
     <Layout
-      cornerButtonContent="Register"
-      onClickCornerButton={navigateToRegister}
+      navBarButtonContent="Sign up"
+      onClickCornerButton={() => router.push("sign-up")}
       isLoading={isLoading}
       notifications={notifications}
+      containerSize={ContainerSize.SMALL}
     >
-      <div className="sign-in-and-up-container">
-        <SignInAndUpFrom
-          title="Sign in with your account"
-          onClickBack={navigateToRegister}
-          backButtonContent="To resgister"
-          nextButtonContent="Sign in"
-          onSubmit={signIn}
-        >
-          <TextInput
-            onChange={(e) => {
-              setUsername(e.target.value);
-            }}
-            type={TextInputType.ORANGE}
-            iconSrc="/images/username-icon.png"
-            placeholder="Your eamil"
-            error={invalidEmailError}
-          />
-          <TextInput
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            password
-            type={TextInputType.ORANGE}
-            iconSrc="/images/password-icon.png"
-            placeholder="Your password"
-            error={invalidPasswordError}
-          />
-        </SignInAndUpFrom>
-      </div>
+      <SignInAndUpFrom
+        title="Sign in with your account"
+        onClickBack={() => router.push("sign-up")}
+        backButtonContent="To sign up"
+        nextButtonContent="Sign in"
+        onSubmit={signIn}
+      >
+        <TextInput
+          onChange={(e) => {
+            setUsername(e.target.value);
+          }}
+          type={TextInputType.ORANGE}
+          iconSrc="/images/username-icon.png"
+          placeholder="Your eamil"
+          error={invalidEmailError}
+        />
+        <TextInput
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+          password
+          type={TextInputType.ORANGE}
+          iconSrc="/images/password-icon.png"
+          placeholder="Your password"
+          error={invalidPasswordError}
+        />
+      </SignInAndUpFrom>
     </Layout>
   );
 }

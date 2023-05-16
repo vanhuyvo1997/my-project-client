@@ -6,17 +6,11 @@ body{
   padding: 0;
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background-color: #6e6e6e;
+  background-color: #DDDCDC;
 }
 
-.container {
+.page-container {
   padding-top: 45px;
-}
-
-.sign-in-and-up-container{
-  max-width: 420px;
-  margin: auto;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
 }
 
 .notify-container{
