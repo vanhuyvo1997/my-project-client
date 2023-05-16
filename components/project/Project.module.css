@@ -1,0 +1,46 @@
+
+.container{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+    background-color: #FFFFFF;
+    margin: 3px;
+}
+
+.container:hover{
+    opacity: 0.85;
+}
+
+
+.actions{
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.name{
+    line-height: 1.5;
+    font-size: large;
+    font-weight: bold;
+    color: #F7971E;
+    text-decoration: none;
+}
+
+.name:hover{
+    text-decoration: underline;
+}
+
+.details{
+    display: flex;
+    gap: 20px;
+}
+
+
+@media only screen and (max-width: 520px){
+    .details{
+        flex-direction: column;
+        gap: 5px;
+    }
+}
