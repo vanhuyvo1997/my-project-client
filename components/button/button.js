@@ -31,10 +31,10 @@ export default function Button({
 function paseIconFromType(type){
     switch(type){
         case ButtonType.ICON_DLETE: return <>
-            <Image className={styles['icon']} src="/images/delete-icon.png" height={24} width={24}/>&nbsp;
+            <Image className={styles['icon']} src="/images/delete-icon.png" height={24} width={24} alt="delete-icon"/>&nbsp;
         </> 
         case ButtonType.ICON_EDIT: return <>
-            <Image className={styles['icon']} src="/images/edit-icon.png" height={24} width={24}/>&nbsp;
+            <Image className={styles['icon']} src="/images/edit-icon.png" height={24} width={24} alt="edit-icon"/>&nbsp;
         </>
         default: return null;
     }
