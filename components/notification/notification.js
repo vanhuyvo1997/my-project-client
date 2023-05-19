@@ -6,6 +6,8 @@ export const NotifyType = {
     FAIL: 'fail',
 } 
 
+export const NotifyObject = (type, message, deleteFunc) => { return {type: type, message: message, onDelete: deleteFunc}};
+
 export default function Notification({
     type = NotifyType.SUCCESS,
     message = "abc",
