@@ -7,70 +7,111 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import jwtDecode from "jwt-decode";
 import InfiniteScroll from "react-infinite-scroll-component";
+import PopUp from "@my-project/components/pop-up/pop-up";
+import TextInput from "@my-project/components/text-input/text-input";
+import { CREAT_NEW_PROJECT_URL } from "@my-project/api-list";
+import { isValidName } from "@my-project/util/validate-utils";
+import { NotifyObject, NotifyType } from "@my-project/components/notification/notification";
+import { onDeleteNotifycation } from "@my-project/util/notification-utils";
 
 export default function MyProjects() {
-  const [projects, setProjects] = useState(null);
+  const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [username, setUsername] = useState("Guest");
   const [currentPage, setCurrentPage] = useState(0);
-  const [size, setSize] = useState(15);
-  const [totalPages, setTotalPages] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const [isShowAddnewPopUp, setIsShowAddNewPopUp] = useState(false);
   const router = useRouter();
 
-  const url = `http://localhost:8080/api/projects?pageNum=${currentPage}&size=${size}&desc=true&sortBy=startedAt,name`;
+  const [newProjectName, setNewProjectName] = useState("");
+  const [projectNameErr, setProjectNameErr] = useState("");
+
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
+    setIsLoading(true);
     const accessToken = localStorage.getItem("accessToken");
     (!accessToken || jwtDecode(accessToken).role != "USER") &&
       router.push("/sign-in");
     setUsername(jwtDecode(accessToken).sub);
-    setIsLoading(true);
-    loadFirstPage();
+    loadPageFirstTime();
     setIsLoading(false);
   }, []);
 
-  const fetchFromUrl = (url) => {
+  const fetchFromAuthenticatedUrl = (url, method, body) => {
     return fetch(url, {
-      method: "GET",
+      method: method,
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        "Content-Type": "application/json",
       },
+      body: body,
     });
   };
 
-  const loadFirstPage = async () => {
+  const loadProjectsFormUrl = async (url) => {
     try {
-      const response = await fetchFromUrl(url);
+      const response = await fetchFromAuthenticatedUrl(url, "GET");
       if (response.status == 403) {
         router.push("/sign-in");
-      }
-      if (response.ok) {
+        return [];
+      } else if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        setTotalPages(data.totalPages);
         setCurrentPage(data.currentPageNum);
-        setProjects(data.currentPageContent);
-        (data.currentPageNum < data.totalPages - 1) && setHasMore(true);
+        setHasMore(data.currentPageNum < data.totalPages - 1);
+        return data.currentPageContent;
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       router.push("/sign-in");
     }
+  }
+
+  const loadPageFirstTime = async () => {
+    const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=0&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name`;
+    setProjects(await loadProjectsFormUrl(url));
   };
 
   const loadMoreProject = async (page) => {
-    if (currentPage < totalPages - 1) {
-      const url = `http://localhost:8080/api/projects?pageNum=${
-        currentPage + 1
-      }&size=${size}&desc=true&sortBy=startedAt,name`;
-      const response = await fetchFromUrl(url);
-      const data = await response.json();
-      setProjects([...projects, ...data.currentPageContent]);
-      setCurrentPage(data.currentPageNum);
-    } else setHasMore(false);
+    if (hasMore) {
+      const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=${currentPage + 1}&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name`;
+      setProjects([...projects, ... await loadProjectsFormUrl(url)]);
+    }
   };
 
+  const deleteNotification = notification =>onDeleteNotifycation(notification, notifications, setNotifications);
+
+  const showAddNewPopUp = () => {setIsShowAddNewPopUp(true);};
+  const hideAddNewPopUp = () => {setIsShowAddNewPopUp(false);};
+
+  const createNewProject = async () => {
+    setIsLoading(true);
+    setProjectNameErr("");
+    if (!isValidName(newProjectName)){
+      setProjectNameErr("Name must not be empty");
+      setIsLoading(true);
+      return;
+    }
+    
+    try {
+      const body = JSON.stringify({name: newProjectName});
+      const response = await fetchFromAuthenticatedUrl(process.env.NEXT_PUBLIC_PROJECT_BASE_API, "POST", body);
+      if (response.ok) {
+        const data = await response.json();
+        notifications.push(NotifyObject(NotifyType.SUCCESS,`Create project named "${data.name}" successfully.`,  deleteNotification));
+        loadPageFirstTime();
+        setNewProjectName("");
+      } else if (response.status == 409) {
+        setProjectNameErr("Project name already exist");
+      }
+    } catch (err) {
+      console.log(err);
+      notifications.push(NotifyObject(NotifyType.FAIL, err.message, deleteNotification));
+    }
+    setIsLoading(false);
+  };
+
+  
   return (
     <Layout
       showGreeting
@@ -78,31 +119,49 @@ export default function MyProjects() {
       navBarButtonContent="Sign out"
       containerSize={ContainerSize.LARGE}
       isLoading={isLoading}
-      onClickCornerButton={loadFirstPage}
+      notifications={notifications}
+      onDeleteNotifycation={deleteNotification}
     >
-      
-        <div className={styles["sticky-top"]}>
-          <AddNewButton />
-        </div>
+      <div className={styles["sticky-top"]}>
+        <AddNewButton label="Add new project" onClick={showAddNewPopUp} />
+      </div>
 
-        <InfiniteScroll
-          className={styles["project-list"]}
-          dataLength={projects && projects.length}
-          hasMore={hasMore}
-          loader="loading..."
-          next={loadMoreProject}
-        >
-          {projects &&
-            projects.map((e) => (
-              <Project
-                key={e.id}
-                name={e.name}
-                startedAt={new Date(e.createdAt).toLocaleDateString()}
-                status={e.status}
-              />
-            ))}
-        </InfiniteScroll>
-     
+      <InfiniteScroll
+        className={styles["project-list"]}
+        dataLength={projects && projects.length}
+        hasMore={hasMore}
+        loader="loading..."
+        next={loadMoreProject}
+      >
+        {projects &&
+          projects.map((e) => (
+            <Project
+              key={e.id}
+              name={e.name}
+              startedAt={new Date(e.createdAt).toLocaleDateString()}
+              status={e.status}
+            />
+          ))}
+      </InfiniteScroll>
+
+      <PopUp
+        isShow={isShowAddnewPopUp}
+        onDecline={hideAddNewPopUp}
+        title="Create new project"
+        onClose={hideAddNewPopUp}
+        confirmPopup={false}
+        popUpIcon="/images/icon-add-new.png"
+        description="Type the name of the project you want to create"
+        onConfirm={createNewProject}
+      >
+        <TextInput
+          error={projectNameErr}
+          value={newProjectName}
+          onChange={(e) => setNewProjectName(e.target.value)}
+          name="name"
+          placeholder="Project's name"
+        ></TextInput>
+      </PopUp>
     </Layout>
   );
 }

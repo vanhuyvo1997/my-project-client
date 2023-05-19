@@ -3,7 +3,7 @@ const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]
 
 
 export function isValidName(name){
-    return name;
+    return name && name.trim() != "";
 }
 
 export function isValidEmail(email){
