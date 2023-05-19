@@ -32,7 +32,7 @@ export default function PopUp({
             <h4 className={styles.title}>
               <b>{title}</b>
             </h4>
-            {popUpIcon && <Image src={popUpIcon} width={45} height={45} />}
+            {popUpIcon && <Image src={popUpIcon} width={45} height={45} alt="pop-up-icon"/>}
             {description&& <p className={styles.description}>{description}</p>}
           </div>
           {!confirmPopup&&<div className={styles["pop-up-body"]}>
