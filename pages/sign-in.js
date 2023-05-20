@@ -40,7 +40,7 @@ export default function SignIn() {
     }
 
     if (!invalidEmailError && !invalidPasswordError) {
-      const url = "http://localhost:8080/api/auth";
+      const url = process.env.NEXT_PUBLIC_SIGN_IN_API;
       try {
         const respone = await fetch(url, {
           method: "POST",
