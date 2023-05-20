@@ -9,7 +9,6 @@ import jwtDecode from "jwt-decode";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PopUp from "@my-project/components/pop-up/pop-up";
 import TextInput from "@my-project/components/text-input/text-input";
-import { CREAT_NEW_PROJECT_URL } from "@my-project/api-list";
 import { isValidName } from "@my-project/util/validate-utils";
 import { NotifyObject, NotifyType } from "@my-project/components/notification/notification";
 import { onDeleteNotifycation } from "@my-project/util/notification-utils";
