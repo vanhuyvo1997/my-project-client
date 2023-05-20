@@ -13,6 +13,7 @@ import { CREAT_NEW_PROJECT_URL } from "@my-project/api-list";
 import { isValidName } from "@my-project/util/validate-utils";
 import { NotifyObject, NotifyType } from "@my-project/components/notification/notification";
 import { onDeleteNotifycation } from "@my-project/util/notification-utils";
+import PageHeaderControls from "@my-project/components/project-controls/page-header-controls";
 
 export default function MyProjects() {
   const [projects, setProjects] = useState([]);
@@ -122,9 +123,10 @@ export default function MyProjects() {
       notifications={notifications}
       onDeleteNotifycation={deleteNotification}
     >
-      <div className={styles["sticky-top"]}>
-        <AddNewButton label="Add new project" onClick={showAddNewPopUp} />
-      </div>
+      <PageHeaderControls 
+        addNewButtonLabel="Add new project"
+        onClickAddNew={showAddNewPopUp}
+        searchBarPlaceHoder="Search..." />
 
       <InfiniteScroll
         className={styles["project-list"]}
