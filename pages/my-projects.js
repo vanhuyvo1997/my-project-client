@@ -28,6 +28,8 @@ export default function MyProjects() {
 
   const [notifications, setNotifications] = useState([]);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     setIsLoading(true);
     const accessToken = localStorage.getItem("accessToken");
@@ -68,13 +70,15 @@ export default function MyProjects() {
   }
 
   const loadPageFirstTime = async () => {
-    const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=0&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name`;
+    setIsLoading(true);
+    const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=0&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name&term=${searchTerm}`;
     setProjects(await loadProjectsFormUrl(url));
+    setIsLoading(false);
   };
 
   const loadMoreProject = async (page) => {
     if (hasMore) {
-      const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=${currentPage + 1}&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name`;
+      const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=${currentPage + 1}&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name&term=${searchTerm}`;
       setProjects([...projects, ... await loadProjectsFormUrl(url)]);
     }
   };
@@ -89,7 +93,7 @@ export default function MyProjects() {
     setProjectNameErr("");
     if (!isValidName(newProjectName)){
       setProjectNameErr("Name must not be empty");
-      setIsLoading(true);
+      setIsLoading(false);
       return;
     }
     
@@ -111,6 +115,11 @@ export default function MyProjects() {
     setIsLoading(false);
   };
 
+  useEffect(()=>{
+    const searchFunc = setTimeout(loadPageFirstTime, 1000);
+    return ()=>clearTimeout(searchFunc);
+  }, [searchTerm]);
+
   
   return (
     <Layout
@@ -123,6 +132,8 @@ export default function MyProjects() {
       onDeleteNotifycation={deleteNotification}
     >
       <PageHeaderControls 
+        searchValue={searchTerm}
+        onChangeSearchValue={e=> setSearchTerm(e.target.value)}
         addNewButtonLabel="Add new project"
         onClickAddNew={showAddNewPopUp}
         searchBarPlaceHoder="Search..." />

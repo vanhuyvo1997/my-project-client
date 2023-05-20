@@ -6,7 +6,7 @@ export default function PageHeaderControls({
     addNewButtonLabel,
     searchBarPlaceHoder,
     onClickAddNew,
-    onChangeSearchContent,
+    onChangeSearchValue,
     searchValue
 }) {
   return (
@@ -15,7 +15,7 @@ export default function PageHeaderControls({
             <AddNewButton label={addNewButtonLabel} onClick={onClickAddNew}/>
         </div>
         <div className={styles["search-input-container"]}>
-            <TextInput value={searchValue} placeholder={searchBarPlaceHoder} iconSrc="/images/search-icon.png" onChange={onChangeSearchContent} />
+            <TextInput value={searchValue} placeholder={searchBarPlaceHoder} iconSrc="/images/search-icon.png" onChange={onChangeSearchValue} />
         </div>
     </div>
   );
