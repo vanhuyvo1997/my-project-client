@@ -9,10 +9,10 @@ import jwtDecode from "jwt-decode";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PopUp from "@my-project/components/pop-up/pop-up";
 import TextInput from "@my-project/components/text-input/text-input";
-import { CREAT_NEW_PROJECT_URL } from "@my-project/api-list";
 import { isValidName } from "@my-project/util/validate-utils";
 import { NotifyObject, NotifyType } from "@my-project/components/notification/notification";
 import { onDeleteNotifycation } from "@my-project/util/notification-utils";
+import PageHeaderControls from "@my-project/components/project-controls/page-header-controls";
 
 export default function MyProjects() {
   const [projects, setProjects] = useState([]);
@@ -27,6 +27,8 @@ export default function MyProjects() {
   const [projectNameErr, setProjectNameErr] = useState("");
 
   const [notifications, setNotifications] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setIsLoading(true);
@@ -68,13 +70,15 @@ export default function MyProjects() {
   }
 
   const loadPageFirstTime = async () => {
-    const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=0&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name`;
+    setIsLoading(true);
+    const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=0&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name&term=${searchTerm}`;
     setProjects(await loadProjectsFormUrl(url));
+    setIsLoading(false);
   };
 
   const loadMoreProject = async (page) => {
     if (hasMore) {
-      const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=${currentPage + 1}&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name`;
+      const url = `${process.env.NEXT_PUBLIC_PROJECT_BASE_API}?pageNum=${currentPage + 1}&size=${process.env.NEXT_PUBLIC_LOAD_PROJECT_CHUNK_SIZE}&desc=true&sortBy=startedAt,name&term=${searchTerm}`;
       setProjects([...projects, ... await loadProjectsFormUrl(url)]);
     }
   };
@@ -89,7 +93,7 @@ export default function MyProjects() {
     setProjectNameErr("");
     if (!isValidName(newProjectName)){
       setProjectNameErr("Name must not be empty");
-      setIsLoading(true);
+      setIsLoading(false);
       return;
     }
     
@@ -111,6 +115,11 @@ export default function MyProjects() {
     setIsLoading(false);
   };
 
+  useEffect(()=>{
+    const searchFunc = setTimeout(loadPageFirstTime, 1000);
+    return ()=>clearTimeout(searchFunc);
+  }, [searchTerm]);
+
   
   return (
     <Layout
@@ -122,9 +131,12 @@ export default function MyProjects() {
       notifications={notifications}
       onDeleteNotifycation={deleteNotification}
     >
-      <div className={styles["sticky-top"]}>
-        <AddNewButton label="Add new project" onClick={showAddNewPopUp} />
-      </div>
+      <PageHeaderControls 
+        searchValue={searchTerm}
+        onChangeSearchValue={e=> setSearchTerm(e.target.value)}
+        addNewButtonLabel="Add new project"
+        onClickAddNew={showAddNewPopUp}
+        searchBarPlaceHoder="Search..." />
 
       <InfiniteScroll
         className={styles["project-list"]}

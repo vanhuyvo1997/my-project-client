@@ -1,0 +1,31 @@
+.page-header-controls-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 45px;
+    padding: 3px;
+}
+
+.add-button-container{
+    width: 70%;
+}
+
+.search-input-container{
+    width: 25%;
+}
+
+@media only screen and (max-width: 768px) {
+    .page-header-controls-container{
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .add-button-container{
+        width: 100%;
+    }
+    
+    .search-input-container{
+        width: 100%;
+    }
+}

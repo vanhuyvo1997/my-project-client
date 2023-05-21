@@ -53,7 +53,7 @@ export default function SignUp() {
     // submit
     if(Object.keys(validateErrsContainer).length === 0){
       try{
-          const url = "http://localhost:8080/api/auth/register";  
+          const url = process.env.NEXT_PUBLIC_REGISTER_API;  
           let response = await fetch(url, {
             method: "post",
             headers: {
