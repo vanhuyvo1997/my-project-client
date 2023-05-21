@@ -23,6 +23,10 @@ export default function MyProjects() {
   const [isShowAddnewPopUp, setIsShowAddNewPopUp] = useState(false);
   const router = useRouter();
 
+  const [isShowDeleteDialog, setIsShowDeleteDialog] = useState(false);
+  const [deletingProjectId, setDeletingProjectId] = useState(-1);
+  const [deletingProjectName, setDeletingProjectName] = useState("");
+
   const [newProjectName, setNewProjectName] = useState("");
   const [projectNameErr, setProjectNameErr] = useState("");
 
@@ -120,6 +124,33 @@ export default function MyProjects() {
     return ()=>clearTimeout(searchFunc);
   }, [searchTerm]);
 
+  const hideDeleteDialog = () => {setIsShowDeleteDialog(false)};
+  const showDeleteDialog = (id, name) =>{
+    setDeletingProjectId(id);
+    setDeletingProjectName(name);
+    setIsShowDeleteDialog(true);
+  }
+
+  const deleteProject = async ()=>{
+    setIsLoading(true);
+    const url = process.env.NEXT_PUBLIC_PROJECT_BASE_API + `/${deletingProjectId}`
+    try{
+      const respone = await fetchFromAuthenticatedUrl(url, "DELETE");
+      if(respone.ok){
+        setIsShowDeleteDialog(false);
+        notifications.push(NotifyObject(NotifyType.SUCCESS, `Deleted project named "${deletingProjectName}"`, deleteNotification));
+        loadPageFirstTime();
+      } else {
+        notifications.push(NotifyObject(NotifyType.FAIL, `Fail to delete project named "${deletingProjectName}"`, deleteNotification))
+      }
+ 
+    } catch(err){
+      console.error(err);
+      notifications.push(NotifyObject(NotifyType.FAIL, err.message, deleteNotification))
+    }
+    setIsLoading(false);
+  }
+
   
   return (
     <Layout
@@ -152,9 +183,23 @@ export default function MyProjects() {
               name={e.name}
               startedAt={new Date(e.createdAt).toLocaleDateString()}
               status={e.status}
+
+              onClickDelete={()=>showDeleteDialog(e.id, e.name)}
             />
           ))}
       </InfiniteScroll>
+
+      <PopUp
+        confirmPopup title="Delete project"
+        description={<>Project named "<b>{deletingProjectName}</b>" will be deleted permanantly.<br/><br/><b>Are you sure?</b></>}
+        declineButtonContent="No"
+        confirmButtonContent="Yes"
+        popUpIcon="/images/delete-icon.png"
+        isShow = {isShowDeleteDialog}
+        onClose={hideDeleteDialog}
+        onDecline={hideDeleteDialog}
+        onConfirm={deleteProject}
+      />
 
       <PopUp
         isShow={isShowAddnewPopUp}
