@@ -27,6 +27,12 @@ export default function MyProjects() {
   const [deletingProjectId, setDeletingProjectId] = useState(-1);
   const [deletingProjectName, setDeletingProjectName] = useState("");
 
+  const [isShowEditProjectDialog, setIsShowEditProjectDialog] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState(-1);
+  const [editingProjectName, setEditingProjectName] = useState('');
+  const [oldEditingProjectName, setEditingProjectOldName] = useState('');
+
+
   const [newProjectName, setNewProjectName] = useState("");
   const [projectNameErr, setProjectNameErr] = useState("");
 
@@ -90,7 +96,7 @@ export default function MyProjects() {
   const deleteNotification = notification =>onDeleteNotifycation(notification, notifications, setNotifications);
 
   const showAddNewPopUp = () => {setIsShowAddNewPopUp(true);};
-  const hideAddNewPopUp = () => {setIsShowAddNewPopUp(false);};
+  const hideAddNewPopUp = () => {setIsShowAddNewPopUp(false);setProjectNameErr("")};
 
   const createNewProject = async () => {
     setIsLoading(true);
@@ -151,6 +157,54 @@ export default function MyProjects() {
     setIsLoading(false);
   }
 
+
+  const hideEditProjectDialog = () => {
+    setIsShowEditProjectDialog(false);
+    setProjectNameErr("");
+  };
+
+  const showEditProjectDialog = (id, name) =>{
+    setEditingProjectId(id);
+    setEditingProjectName(name);
+    setEditingProjectOldName(name);
+    setIsShowEditProjectDialog(true)
+  };
+
+  const editProject =  async () => {
+    setIsLoading(true)
+
+    if(editingProjectName === oldEditingProjectName){
+      setProjectNameErr("There is no change on name");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!isValidName(editingProjectName)){
+      setProjectNameErr("Name must not be empty");
+      setIsLoading(false);
+      return;
+    }
+
+    try{
+      const url = process.env.NEXT_PUBLIC_PROJECT_BASE_API + `/${editingProjectId}/name`;
+      const respone = await fetchFromAuthenticatedUrl(url, "PATCH", JSON.stringify({name: editingProjectName}));
+      if(respone.ok){
+        const index = projects.findIndex(p=>p.id == editingProjectId);
+        projects[index].name = editingProjectName;
+        setIsShowEditProjectDialog(false);
+        notifications.push(NotifyObject(NotifyType.SUCCESS, `"${oldEditingProjectName}" has changed to "${editingProjectName}"`, deleteNotification));
+      } else if(respone.status == 409){
+        setProjectNameErr("This name is already in use");
+      } else {
+        notifications.push(NotifyObject(NotifyType.FAIL, "Fail to update: " + respone.status , deleteNotification));
+      }
+    } catch(err){
+      console.error(err);
+      notifications.push(NotifyObject(NotifyType.FAIL, err.message, deleteNotification));
+    }
+    setIsLoading(false);
+  }
+
   
   return (
     <Layout
@@ -183,12 +237,13 @@ export default function MyProjects() {
               name={e.name}
               startedAt={new Date(e.createdAt).toLocaleDateString()}
               status={e.status}
-
+              onClickEdit={()=>showEditProjectDialog(e.id, e.name)}
               onClickDelete={()=>showDeleteDialog(e.id, e.name)}
             />
           ))}
       </InfiniteScroll>
 
+      {/* delete project popup */}
       <PopUp
         confirmPopup title="Delete project"
         description={<>Project named "<b>{deletingProjectName}</b>" will be deleted permanantly.<br/><br/><b>Are you sure?</b></>}
@@ -201,6 +256,7 @@ export default function MyProjects() {
         onConfirm={deleteProject}
       />
 
+      {/* Add project popup */}
       <PopUp
         isShow={isShowAddnewPopUp}
         onDecline={hideAddNewPopUp}
@@ -214,11 +270,36 @@ export default function MyProjects() {
         <TextInput
           error={projectNameErr}
           value={newProjectName}
-          onChange={(e) => setNewProjectName(e.target.value)}
+          onChange={(e) => {setNewProjectName(e.target.value); setProjectNameErr("");}}
           name="name"
           placeholder="Project's name"
         ></TextInput>
       </PopUp>
+
+      {/* Edit project pop up */}
+      <PopUp
+        isShow={isShowEditProjectDialog}
+        onDecline={hideEditProjectDialog}
+        title="Edit project"
+        onClose={hideEditProjectDialog}
+        onConfirm={editProject}
+        confirmPopup={false}
+        popUpIcon="/images/edit-icon.png"
+        description={<>Type new name for project named "<b>{oldEditingProjectName}</b>"</>}
+      >
+        <TextInput
+          error={projectNameErr}
+          value={editingProjectName}
+          onChange={(e) => {setEditingProjectName(e.target.value); setProjectNameErr("");}}
+          name="name"
+          placeholder="Project's name"
+        ></TextInput>
+      </PopUp>
+      
     </Layout>
+
+
+
+            
   );
 }
