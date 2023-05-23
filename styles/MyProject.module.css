@@ -3,9 +3,3 @@
     flex-direction: column;
     justify-content: flex-start;
 }
-
-.sticky-top{
-    position: sticky;
-    top: 45px;
-    padding: 3px;
-}
