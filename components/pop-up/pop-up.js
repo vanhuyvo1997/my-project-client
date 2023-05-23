@@ -1,8 +1,6 @@
 import Image from "next/image";
 import styles from "./PopUp.module.css";
 import Button, { ButtonType } from "../button/button";
-import TextInput from "../text-input/text-input";
-import { Children } from "react";
 export default function PopUp({
   title = "Title",
   popUpIcon,
@@ -16,6 +14,7 @@ export default function PopUp({
   onClose,
   isShow,
 }) {
+
   return (
     <div className={styles["pop-up"]} style={{display: isShow? "flex" : "none"}}>
         <div className={styles["pop-up-container"]}>
