@@ -1,0 +1,18 @@
+/* .task-container{
+    width: 100%;
+} */
+
+.subtask-board-container {
+    margin: auto;
+    margin-bottom: 10px;
+    width: 98%;
+    min-height: 200px;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
