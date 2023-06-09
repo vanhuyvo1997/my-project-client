@@ -1,0 +1,12 @@
+.subtask-board{
+    min-height: 200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.add-new-button-container{
+    margin: 4px;
+}
+
+

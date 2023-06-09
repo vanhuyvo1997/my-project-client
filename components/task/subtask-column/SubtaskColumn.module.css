@@ -1,0 +1,14 @@
+.subtask-column{
+    border: 1px dotted;
+    border-top: none;
+    min-height: 100%;
+    width: 33%;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.drag-over {
+    
+}
