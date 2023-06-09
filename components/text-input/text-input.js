@@ -22,7 +22,7 @@ export default function TextInput({
     <>
       <div>
         <div className={styles["input-text-container"]}>
-          {label && <label for={name} className={styles.label}>{label + ":"}</label>}
+          {label && <label htmlFor={name} className={styles.label}>{label + ":"}</label>}
           <input
             className={`${styles["text-input"]} ${styles[type]} ${
               error && styles["error"]
