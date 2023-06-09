@@ -1,0 +1,54 @@
+.subtask-container {
+    background-color: white;
+    display: flex;
+    gap: 4px;
+    justify-content: space-between;
+    align-items: center;
+    margin: 4px;
+    padding: 8px 6px;
+    border-radius: 4px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+}
+
+
+
+.subtask-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 70%;
+}
+
+.subtask-status {
+    display: flex;
+    justify-content: flex-end;
+    align-items: stretch;
+    font-size: .75em;
+    width: 100px;
+    background-color: beige;
+    padding: 2px;
+}
+
+.title {
+    margin: 0;
+    font-size: 0.85em;
+    margin: 2px;
+    color: #F7971E;
+}
+
+.details{
+    display: flex;
+}
+
+.status-bar{
+    font-size: 0.9em;
+    width: 70px;
+    margin-bottom: -5px;
+}
