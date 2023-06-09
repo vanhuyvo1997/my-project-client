@@ -131,11 +131,13 @@ export default function MyProjects() {
   }, [searchTerm]);
 
   const hideDeleteDialog = () => {setIsShowDeleteDialog(false)};
+
   const showDeleteDialog = (id, name) =>{
     setDeletingProjectId(id);
     setDeletingProjectName(name);
     setIsShowDeleteDialog(true);
   }
+
 
   const deleteProject = async ()=>{
     setIsLoading(true);
@@ -233,6 +235,7 @@ export default function MyProjects() {
         {projects &&
           projects.map((e) => (
             <Project
+              link={"projects/" + e.id}
               key={e.id}
               name={e.name}
               startedAt={new Date(e.createdAt).toLocaleDateString()}
