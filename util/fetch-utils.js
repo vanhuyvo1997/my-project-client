@@ -1,11 +1,10 @@
-
-
-export function POST(url, data){
-    return fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
-}
+export const fetchFromAuthenticatedUrl = (url, method, body) => {
+  return fetch(url, {
+    method: method,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      "Content-Type": "application/json",
+    },
+    body: body,
+  });
+};
