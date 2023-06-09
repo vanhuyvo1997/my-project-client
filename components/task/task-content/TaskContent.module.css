@@ -1,0 +1,83 @@
+.task {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 3px;
+    padding: 10px;
+    margin: 4px;
+}
+
+.task:hover {
+    opacity: 0.85;
+}
+
+.task-content {
+    width: 75%;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.title {
+    font-size: 1.1em;
+    margin: 0;
+    line-height: 1.2em;
+    color: #F7971E;
+}
+
+.desciptions {
+    margin: 0;
+    text-align: justify;
+    font-size: .9em;
+}
+
+.other-info {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 70px;
+    flex-direction: row;
+    margin-top: 5px;
+    margin-bottom: -7px;
+}
+
+.task-action {
+    display: flex;
+    gap: 30px;
+    width: 25%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.expand-button {
+    background-color: white;
+    height: 18px;
+    width: 18px;
+    border: none;
+    background-image: url('/images/expand.svg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    transform: rotate(90deg);
+}
+
+.expanded {
+    transform: rotate(0);
+}
+
+.progress-bar{
+    display: flex;
+    gap: 3px;
+    width: 150px;
+}
+
+.samll-text{
+    font-size: 0.7em;
+}
+
+
