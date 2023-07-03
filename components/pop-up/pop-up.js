@@ -1,8 +1,6 @@
 import Image from "next/image";
 import styles from "./PopUp.module.css";
 import Button, { ButtonType } from "../button/button";
-import TextInput from "../text-input/text-input";
-import { Children } from "react";
 export default function PopUp({
   title = "Title",
   popUpIcon,
@@ -14,12 +12,22 @@ export default function PopUp({
   confirmPopup,
   children = "stay your form controls here",
   onClose,
-  isShow,
 }) {
+
+  document.removeEventListener("keydown", null);
+  document.addEventListener("keydown", (event) => {
+    if(event.keyCode == 27){
+      onClose();
+    }
+  
+  })
+
+
   return (
-    <div className={styles["pop-up"]} style={{display: isShow? "flex" : "none"}}>
-        <div className={styles["pop-up-container"]}>
-          <button className={styles["close-button"]} onClick={onClose}>
+    <div className={styles["pop-up"]}>
+        <form onSubmit={(e)=>{e.preventDefault(); onConfirm(e)}}>
+        <div className={styles["pop-up-container"]}>        
+          <button className={styles["close-button"]} type="button" onClick={onClose}>
             <Image
               title="close"
               src="/images/close-button-icon.png"
@@ -45,12 +53,13 @@ export default function PopUp({
               onClick={onDecline}
             ></Button>
             <Button
+              submit
               type={ButtonType.ORANGE}
               content={confirmButtonContent}
-              onClick={onConfirm}
             ></Button>
           </div>
         </div>
+        </form>
     </div>
   );
 }

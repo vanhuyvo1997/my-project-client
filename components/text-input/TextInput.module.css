@@ -49,3 +49,16 @@
     color: #F7971E;
     line-height: 1.6em;
 }
+
+.textarea{
+    width: 100%;
+    min-height: 100px;
+    resize: none;
+    outline: none;
+    border-style: none none solid;
+    border-width: 4px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+    padding: 8px 10px;
+    border-color: #F7971E;
+}

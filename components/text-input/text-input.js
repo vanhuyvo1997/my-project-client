@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styles from "./TextInput.module.css";
-import Button from "../button/button";
 
 export const TextInputType = {
   PRIMARY: "primary",
@@ -16,6 +15,8 @@ export default function TextInput({
   error,
   value,
   label,
+  textarea,
+  maxLength,
 }) {
   const [isPassword, setIsPassword] = useState(password);
   return (
@@ -23,7 +24,7 @@ export default function TextInput({
       <div>
         <div className={styles["input-text-container"]}>
           {label && <label htmlFor={name} className={styles.label}>{label + ":"}</label>}
-          <input
+          {!textarea&&<input maxLength={maxLength}
             className={`${styles["text-input"]} ${styles[type]} ${
               error && styles["error"]
             }`}
@@ -44,7 +45,7 @@ export default function TextInput({
               //if provid no icon src
               (password && { paddingRight: "30px" })
             }
-          />
+          />}
           {password && (
             <button
               style={{
@@ -61,6 +62,8 @@ export default function TextInput({
               type="button"
             />
           )}
+
+          {textarea&&<textarea maxLength={maxLength} name={name} onChange={onChange} value={value} placeholder={placeholder} className={styles["textarea"]} />}
         </div>
 
         {error && <small className={styles["error-message"]}>{error}</small>}

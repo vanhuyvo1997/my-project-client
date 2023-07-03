@@ -1,44 +1,17 @@
 .nav-bar {
-    display: block;
+    display: flex;
+    justify-content: space-between;
     background-color: black;
-    padding: 0px 15px;
     position: fixed;
     top: 0;
     width: 100%;
-    height: 45px;
+    height: 42px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    z-index: 1;
+    z-index: 100;
 }
 
-.greeting{
-    margin: 0 15px;
-    color: white;
-    font-size: 0.7em;
-    position: relative;
-    line-height: 360%;
-}
-
-.avatar{
-    position: absolute;
-    top: 4px;
-    left: -35px;
-}
-
-.clearfix::after{
-    content: "";
-    clear: both;
-    display: table;
-}
-
-.logo{
-   display: inline;
-}
-
-.nav-item{
-    margin-top: 2px;
-    float:right;
-}
-
-@media only screen and (max-width: 420px){
-    .greeting{display: none;}
+@media only screen and (min-width: 600px){
+    .nav-bar{
+        padding: 0px 20px;
+    }
 }

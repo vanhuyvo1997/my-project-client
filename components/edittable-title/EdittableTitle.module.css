@@ -1,0 +1,24 @@
+.title {
+    position: relative;
+    margin: 0;
+    font-size: 0.9em;
+    margin: 0px;
+    color: #F7971E;
+    font-weight: lighter;
+    font-style: italic;
+}
+
+.edit-title-button{
+    border: none;
+    background-color: transparent;
+    background-image: url("/images/pen.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    cursor: pointer;
+    visibility: hidden;;
+}
+
+.title:hover .edit-title-button{
+    visibility: visible;
+}

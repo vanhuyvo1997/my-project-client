@@ -23,17 +23,12 @@
     gap: 5px;
 }
 
-.title {
-    font-size: 1.1em;
-    margin: 0;
-    line-height: 1.2em;
-    color: #F7971E;
-}
 
 .desciptions {
     margin: 0;
     text-align: justify;
-    font-size: .9em;
+    font-size: .75em;
+    color: #3b3935;
 }
 
 .other-info {

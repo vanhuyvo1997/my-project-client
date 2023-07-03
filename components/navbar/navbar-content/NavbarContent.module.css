@@ -1,0 +1,13 @@
+.container{
+    display: flex;
+    flex-direction: row;
+}
+
+.greeting{
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 10px;
+    font-size: 0.8em;
+}

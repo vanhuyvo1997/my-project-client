@@ -5,6 +5,7 @@ import styles from "./SubtaskBoard.module.css";
 import AddNewButton from "@my-project/components/add-new-button/add-new-button";
 
 export default function SubtaskBoard({
+  ownerTaskId,
   column1Data = [],
   column2Data = [],
   column3Data = [],
@@ -13,6 +14,7 @@ export default function SubtaskBoard({
   onDropToColumn3,
   onClickAddNewButton,
   onDeleteSubtask,
+  onClickEditSubtaskTitle,
 }) {
   const [draggingId, setDraggingId] = useState(-1);
   const [draggingStatus, setDraggingStatus] = useState("");
@@ -36,7 +38,8 @@ export default function SubtaskBoard({
             stoppedAt={e.stoppedAt}
             finishedAt={e.finishedAt}
             onDelete={() => onDeleteSubtask(e.id)}
-            onChangeTitle={(event)=>handleChangeTitle(e.value)}
+            onClickEditTitle= {()=>onClickEditSubtaskTitle(e.id, e.title,  ownerTaskId)}
+
           />
         ))}
       </SubtaskColumn>
@@ -53,12 +56,14 @@ export default function SubtaskBoard({
             stoppedAt={e.stoppedAt}
             finishedAt={e.finishedAt}
             onDelete={() => onDeleteSubtask(e.id)}
+            onClickEditTitle= {()=>onClickEditSubtaskTitle(e.id, e.title,  ownerTaskId)}
           />
         ))}
       </SubtaskColumn>
       <SubtaskColumn onDrop={() => onDropToColumn3(draggingId, draggingStatus)}>
         {column3Data.map((e, index) => (
           <Subtask
+            lineThrough={true}
             onDragStart={()=>updateDraggingId(e.id, e.status)}
             onDragEnd={()=>updateDraggingId(-1, "")}
             key={e.id}
@@ -69,6 +74,7 @@ export default function SubtaskBoard({
             stoppedAt={e.stoppedAt}
             finishedAt={e.finishedAt}
             onDelete={() => onDeleteSubtask(e.id)}
+            onClickEditTitle= {()=>onClickEditSubtaskTitle(e.id, e.title,  ownerTaskId)}
           />
         ))}
       </SubtaskColumn>

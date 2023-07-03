@@ -1,36 +1,32 @@
 import NavBar from "../navbar/nav-bar";
-import Notification from '@my-project/components/notification/notification';
-import { NotifyType } from '@my-project/components/notification/notification';
+import Notification from "@my-project/components/notification/notification";
 import Loading from "../loading/loading";
-import PageContainer, {ContainerSize} from "../page-container/page-container";
+import PageContainer, { ContainerSize } from "../page-container/page-container";
 export default function Layout({
   children,
-  onClickCornerButton,
-  navBarButtonContent,
-  greetingName,
   isLoading,
   notifications,
-  showGreeting,
-  containerSize
+  onDeleteNotification,
+  stage,
+  containerSize,
 }) {
+  console.log("checking...");
   return (
     <>
-      <NavBar
-        onClickButton={onClickCornerButton}
-        buttonContent={navBarButtonContent}
-        name={greetingName}
-        showGreeting={showGreeting}
-        navBarButtonContent = {navBarButtonContent}
-      />
-      <PageContainer size={containerSize}>
-        {children}
-      </PageContainer>
-      <div className="notify-container">
-        {
-          notifications&&notifications.map((e, index)=> <Notification key={index} type={e.type} message={e.message} onDelete={()=>e.onDelete(e)}/>)
-        }
+      <NavBar stage={stage} />
+      <PageContainer size={containerSize}>{children}</PageContainer>
+      <div className="notify-container col-s-8 col-5">
+        {notifications &&
+          notifications.map((e, index) => (
+            <Notification
+              key={index}
+              type={e.type}
+              message={e.message}
+              onDelete={() => onDeleteNotification(e)}
+            />
+          ))}
       </div>
-      {isLoading&&<Loading/>}
+      {isLoading && <Loading />}
     </>
   );
 }

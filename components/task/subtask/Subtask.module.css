@@ -36,13 +36,6 @@
     padding: 2px;
 }
 
-.title {
-    margin: 0;
-    font-size: 0.85em;
-    margin: 2px;
-    color: #F7971E;
-}
-
 .details{
     display: flex;
 }

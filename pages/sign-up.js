@@ -3,107 +3,117 @@ import SignInAndUpFrom from "@my-project/components/sign-in-and-out/sign-in-up-f
 import TextInput from "@my-project/components/text-input/text-input";
 import { useRouter } from "next/router";
 import { TextInputType } from "@my-project/components/text-input/text-input";
-import { useState } from "react"; 
+import { useContext, useState } from "react";
 import { NotifyType } from "@my-project/components/notification/notification";
 
-import { isValidName, isValidEmail, isValidPassword } from "@my-project/util/validate-utils";
+import {
+  isValidName,
+  isValidEmail,
+  isValidPassword,
+} from "@my-project/util/validate-utils";
 import { ContainerSize } from "@my-project/components/page-container/page-container";
+import { NotifyObject } from "@my-project/components/notification/notification";
+import ApplicationProvider from "@my-project/providers/application-provider";
+import { NotifcationContext } from "@my-project/contexts/application-context";
 
-export default function SignUp() {
+export default function SignUpPage() {
+  return (
+    <ApplicationProvider>
+      <PageContent />
+    </ApplicationProvider>
+  );
+}
+
+function PageContent() {
   const [validationErrs, setValidationErrs] = useState({});
-  const [notifications, setNotification] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmedPassword, setConfirmedPassword] = useState('');
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmedPassword, setConfirmedPassword] = useState("");
   const router = useRouter();
+
+  const [notifications, pushNotifcation, deleteNotification] =
+    useContext(NotifcationContext);
 
   function navigateToRegister() {
     router.push("/sign-in");
   }
 
   async function handleSubmit(e) {
-    //prevent submit form
     e.preventDefault();
-    //Show loading
-    setIsLoading(true);    
-    //Get data from submit form
-
-    //  errors 
+    setIsLoading(true);
+    //  errors
     let validateErrsContainer = {};
-
     // validations
-    if(!isValidName(name)){
-        validateErrsContainer = {...validateErrsContainer, name : 'Name is required'};
+    if (!isValidName(name)) {
+      validateErrsContainer = {
+        ...validateErrsContainer,
+        name: "Name is required",
+      };
     }
-    if(!isValidEmail(username)){
-        validateErrsContainer = {...validateErrsContainer, username : 'Email is invalid'};
+    if (!isValidEmail(username)) {
+      validateErrsContainer = {
+        ...validateErrsContainer,
+        username: "Email is invalid",
+      };
     }
-    if(!isValidPassword(password)){
-        validateErrsContainer = {...validateErrsContainer, password : 'Password is invalid'};
+    if (!isValidPassword(password)) {
+      validateErrsContainer = {
+        ...validateErrsContainer,
+        password: "Password is invalid",
+      };
     }
-    if(isValidPassword(password) && password !== confirmedPassword){
-        validateErrsContainer = {...validateErrsContainer, confirmedPassword : 'Confirmed password is not match'};
+    if (isValidPassword(password) && password !== confirmedPassword) {
+      validateErrsContainer = {
+        ...validateErrsContainer,
+        confirmedPassword: "Confirmed password is not match",
+      };
     }
 
     //update errors to show validation messages
     setValidationErrs(validateErrsContainer);
-
-    // submit
-    if(Object.keys(validateErrsContainer).length === 0){
-      try{
-          const url = process.env.NEXT_PUBLIC_REGISTER_API;  
-          let response = await fetch(url, {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: name,
-              username: username,
-              password: password,
-            }),
-          });
-
-          if(response.ok){
-            notifications.push({type: NotifyType.SUCCESS, message: "Register successfully.", onDelete: (e)=> onDeleteNotifycation(e),});
-            resetData();
-          } else {
-            notifications.push ({type: NotifyType.FAIL, message: "Email is already in use.", onDelete: (e) => onDeleteNotifycation(e),});
-          }
-        } catch(err){
-          notifications.push({type: NotifyType.FAIL, message: "Failed to connect to server.", onDelete: (e) => onDeleteNotifycation(e),});
-        }
-      }
-    setIsLoading(false);
-  }
-
-  function resetData(){
-    setName('');
-    setPassword('');
-    setConfirmedPassword('');
-    setUsername('');
-  }
-
-  function onDeleteNotifycation(notification){
-    const index = notifications.indexOf(notification);
-    if(index > -1){
-      notifications.splice(index, 1);
+    if (Object.keys(validateErrsContainer).length !== 0) {
+      setIsLoading(false);
+      return;
     }
-    setNotification([...notifications]);
+    // submit
+    try {
+      const url = process.env.NEXT_PUBLIC_REGISTER_API;
+      const body = {
+        name: name,
+        username: username,
+        password: password,
+      };
+      const response = await fetchFromUnauthenticatedUrl(url, "POST", body);
+      if (response.ok) {
+        pushNotifcation("Register successfully.", NotifyType.SUCCESS);
+        resetData();
+        return;
+      }
+      pushNotifcation("Email is already in use.", NotifyType.FAIL);
+    } catch (err) {
+      console.error(err);
+      pushNotifcation("Failed to connect to server.", NotifyType.FAIL);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-
-
+  function resetData() {
+    setName("");
+    setPassword("");
+    setConfirmedPassword("");
+    setUsername("");
+  }
 
   return (
     <Layout
-      navBarButtonContent="Sign in"
-      onClickCornerButton={navigateToRegister}
+      stage={'sign-up'}
       isLoading={isLoading}
       notifications={notifications}
       containerSize={ContainerSize.SMALL}
+      onDeleteNotification={deleteNotification}
     >
       <div className="sign-in-and-up-container">
         <SignInAndUpFrom
@@ -120,7 +130,7 @@ export default function SignUp() {
             iconSrc="/images/name-icon.png"
             placeholder="Your name"
             error={validationErrs.name}
-            onChange={e=>setName( e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
           <TextInput
             value={username}
@@ -129,7 +139,7 @@ export default function SignUp() {
             iconSrc="/images/username-icon.png"
             placeholder="Your email"
             error={validationErrs.username}
-            onChange={e=>setUsername( e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextInput
             value={password}
@@ -139,7 +149,7 @@ export default function SignUp() {
             iconSrc="/images/password-icon.png"
             placeholder="Your password"
             error={validationErrs.password}
-            onChange={e=>setPassword( e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <TextInput
             value={confirmedPassword}
@@ -149,7 +159,7 @@ export default function SignUp() {
             iconSrc="/images/password-icon.png"
             placeholder="Confirm your password"
             error={validationErrs.confirmedPassword}
-            onChange={e=>setConfirmedPassword(e.target.value)}
+            onChange={(e) => setConfirmedPassword(e.target.value)}
           />
           <div>
             <small>

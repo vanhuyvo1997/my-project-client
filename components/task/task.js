@@ -7,6 +7,8 @@ import { Status } from "./task-progress-bar/task-progress-bar";
 import PopUp from "../pop-up/pop-up";
 import TextInput from "../text-input/text-input";
 import { isValidName } from "@my-project/util/validate-utils";
+import OneFieldEditDialog from "../dialogs/one-field-edit-dialog";
+import { NotifyObject, NotifyType } from "../notification/notification";
 export default function Task({
   id,
   belongProjectId,
@@ -18,6 +20,8 @@ export default function Task({
   startedAt, 
   finishedAt,
   onDelete,
+  onEdit,
+  pushNotifcation,
 }) {
 
   const [numOfSubtask, setNumOfSubtask] = useState(subtasksNum);
@@ -33,8 +37,57 @@ export default function Task({
   const [addingSubtaskName, setAddingSubtaskName] = useState("");
   const [subtaskNameError, setSubtaskNameError] = useState("");
 
+  const [isShowEditSubtaskDialog, setIsShowEditSubtaskDialog] = useState(false);
+  const [edittingSubtaskId, setEdittingSubtaskId] = useState(-1);
+  const [originEdittingSubtaskTitle, setOriginEdittingSubtaskTitle] = useState("");
+  const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
+
+
   const taskApiUrl = process.env.NEXT_PUBLIC_PROJECT_BASE_API + "/" + belongProjectId + "/tasks/" + id;
   const subtaskApiUrl = taskApiUrl + "/subtasks";
+
+    const handleEditSubtaskTitle = async () => {
+    if(originEdittingSubtaskTitle === newSubtaskTitle){
+      setSubtaskNameError("You have to make some change");
+      return;
+    }
+
+    if(newSubtaskTitle.trim().length == 0){
+      setSubtaskNameError("You have to type something");
+      return;
+    }
+    const url = subtaskApiUrl + `/${edittingSubtaskId}/title`;
+    try{
+      const respone = await fetchFromAuthenticatedUrl(url, "PATCH", JSON.stringify({title: newSubtaskTitle}));
+      if(respone.ok){
+        loadSubtasks();
+        pushNotifcation(NotifyType.SUCCESS,  `"${originEdittingSubtaskTitle}" has changed to "${newSubtaskTitle}"`);
+        handleCloseEditSubtaskTitleDialog();
+      } else {
+        pushNotifcation(NotifyType.FAIL, `Change subtask title failed ${respone.status}`);
+      };
+    } catch (err){
+      console.error(err);
+    }
+  }
+
+  const handleCloseEditSubtaskTitleDialog = ()=>{
+    setIsShowEditSubtaskDialog(false);
+  }
+
+  const handleShowEidtSubtaskTitledialog = (subtaskId, title, taskId)=>{
+    setSubtaskNameError("");
+    setIsShowEditSubtaskDialog(true);
+    setEdittingSubtaskId(subtaskId);
+    setOriginEdittingSubtaskTitle(title);
+    setNewSubtaskTitle(title);
+  }
+
+  const handleChangeNewSubtaskTitle = (e)=>{
+    setNewSubtaskTitle(e);
+    setSubtaskNameError("");
+  }
+
 
   const updateTaskContent = async () =>{
     try{
@@ -57,8 +110,9 @@ export default function Task({
     try{
       const respone = await fetchFromAuthenticatedUrl(deleteUrl, "DELETE");
       if(respone.ok){
+        pushNotifcation(NotifyType.SUCCESS, "Delete subtask successfully");
         loadSubtasks();
-      } else console.error(respone.status);
+      } else pushNotifcation(NotifyType.FAIL, `Delete subtask failed [${respone.status}]` );;
     } catch(err){
       console.error(err);
     }
@@ -92,6 +146,8 @@ export default function Task({
       console.error(err);
     }
   }
+
+
 
 
   const loadSubtasks = async ()=>{
@@ -132,10 +188,12 @@ export default function Task({
         setSubtaskNameError("Subtask name already exists");
         return;
       } else if(respone.ok){
+        const data = await respone.json();
         loadSubtasks();
         setAddingSubtaskName("");
+        pushNotifcation(NotifyType.SUCCESS, `Added subtask entitled "${data.title}"`)
       }else {
-        console.error(respone.status)
+        pushNotifcation(NotifyType.FAIL, `Add subtask entitled "${addingSubtaskName}" failed [${respone.status}]`);
       }
 
     } catch(err){
@@ -146,17 +204,30 @@ export default function Task({
 
   return (
     <>
-    <PopUp
+    {isShowAddSubtaskPopup&&<PopUp
         title="Add new subtask"
         popUpIcon="/images/icon-add-new.png"
         description="type subtasks' name you would like to create"
-        isShow={isShowAddSubtaskPopup}
         onClose={handleCloseAddSubtaskPopup}
         onDecline={handleCloseAddSubtaskPopup}
         onConfirm={addSubtask}
       >
         <TextInput value={addingSubtaskName} error={subtaskNameError} onChange={e=> {setAddingSubtaskName(e.target.value); setSubtaskNameError("")}} placeholder="Subtasks name..."/>
-    </PopUp>
+    </PopUp>}
+
+    {isShowEditSubtaskDialog&&<OneFieldEditDialog 
+      title="Edit subtask"
+      value={newSubtaskTitle}
+      fieldErr={subtaskNameError}
+      description={<>Type new title for subtask "<b>{originEdittingSubtaskTitle}</b>"</>}
+      fieldPlaceholder ="Subtask title..."
+      onClose={handleCloseEditSubtaskTitleDialog}
+      onDecline={handleCloseEditSubtaskTitleDialog}
+      onChangeField={(e)=>handleChangeNewSubtaskTitle(e)}
+      onConfirm={handleEditSubtaskTitle}
+    />}
+
+
     <div className={styles["task-container"]}>
       <TaskContent
         title={title}
@@ -167,6 +238,7 @@ export default function Task({
         finishedAt={finishedTime}
         subtasksNum={numOfSubtask}
         onClickExpand={handleClickExpand}
+        onEdit={onEdit}
         onDelete={onDelete}
       />
       <div
@@ -174,12 +246,14 @@ export default function Task({
         ${showBoard ? styles["show"] : styles["hide"]}`}
       >
         <SubtaskBoard onClickAddNewButton={showAddSubtaskPopup} column1Data={subtasks.filter(e=> e.status === Status.NEW || e.status == Status.PENDING)}
+          ownerTaskId={id}
           column2Data={subtasks.filter(e=> e.status == Status.IN_PROGRESS)}
           column3Data={subtasks.filter(e=> e.status == Status.DONE)}
           onDropToColumn1={handleDropOnColumn1}
           onDropToColumn2={handleDropOnColumn2}
           onDropToColumn3={handleDropOnColumn3}
           onDeleteSubtask={deleteSubtask}
+          onClickEditSubtaskTitle={handleShowEidtSubtaskTitledialog}
          />
       </div>
     </div>

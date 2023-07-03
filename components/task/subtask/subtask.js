@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import styles from "./Subtask.module.css";
-import TaskProgressBar from "../task-progress-bar/task-progress-bar";
+import TaskProgressBar, { Status } from "../task-progress-bar/task-progress-bar";
 import { convert } from "@my-project/util/datetime-formater";
+import EdittableTitle from "@my-project/components/edittable-title/edittable-title";
 
 export default function Subtask({
   title = "this is title, the title is too long",
@@ -13,7 +14,11 @@ export default function Subtask({
   onDragStart,
   onDragEnd,
   onDelete,
+  onClickEditTitle,
+  lineThrough
 }) {
+
+  
   const handleOnDragStart = (e) => {
     setTimeout(() => {
       e.target.style.display = "none";
@@ -36,7 +41,7 @@ export default function Subtask({
       className={styles["subtask-container"]}
     >
       <div className={styles["subtask-content"]}>
-        <h6 className={styles.title}>{title}</h6>
+        <EdittableTitle lineThrough={lineThrough} title={title} onClickEdit={onClickEditTitle}/>
         <div className={styles.details}>
           <div className={styles["status-bar"]}>
             <TaskProgressBar
