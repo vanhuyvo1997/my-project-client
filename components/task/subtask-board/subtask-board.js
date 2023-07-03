@@ -12,6 +12,7 @@ export default function SubtaskBoard({
   onDropToColumn2,
   onDropToColumn3,
   onClickAddNewButton,
+  onDeleteSubtask,
 }) {
   const [draggingId, setDraggingId] = useState(-1);
   const [draggingStatus, setDraggingStatus] = useState("");
@@ -26,6 +27,7 @@ export default function SubtaskBoard({
         {column1Data.map((e, index) => (
           <Subtask
             onDragStart={()=>updateDraggingId(e.id, e.status)}
+            onDragEnd={()=>updateDraggingId(-1, "")}
             key={e.id}
             title={e.title}
             status={e.status}
@@ -33,6 +35,8 @@ export default function SubtaskBoard({
             startedAt={e.startedAt}
             stoppedAt={e.stoppedAt}
             finishedAt={e.finishedAt}
+            onDelete={() => onDeleteSubtask(e.id)}
+            onChangeTitle={(event)=>handleChangeTitle(e.value)}
           />
         ))}
       </SubtaskColumn>
@@ -40,6 +44,7 @@ export default function SubtaskBoard({
         {column2Data.map((e, index) => (
           <Subtask
             onDragStart={()=>updateDraggingId(e.id, e.status)}
+            onDragEnd={()=>updateDraggingId(-1, "")}
             key={e.id}
             title={e.title}
             status={e.status}
@@ -47,6 +52,7 @@ export default function SubtaskBoard({
             startedAt={e.startedAt}
             stoppedAt={e.stoppedAt}
             finishedAt={e.finishedAt}
+            onDelete={() => onDeleteSubtask(e.id)}
           />
         ))}
       </SubtaskColumn>
@@ -54,6 +60,7 @@ export default function SubtaskBoard({
         {column3Data.map((e, index) => (
           <Subtask
             onDragStart={()=>updateDraggingId(e.id, e.status)}
+            onDragEnd={()=>updateDraggingId(-1, "")}
             key={e.id}
             title={e.title}
             status={e.status}
@@ -61,6 +68,7 @@ export default function SubtaskBoard({
             startedAt={e.startedAt}
             stoppedAt={e.stoppedAt}
             finishedAt={e.finishedAt}
+            onDelete={() => onDeleteSubtask(e.id)}
           />
         ))}
       </SubtaskColumn>

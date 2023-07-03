@@ -7,10 +7,10 @@ export const Status = {
   PENDING: "PENDING",
 };
 export default function TaskProgressBar({
-  createdAt = "19:30 19/06/1997",
-  startedAt = "24:30 20/06/1997",
-  finishedAt = "11:00 21/06/1997",
-  stoppedAt = "22:00 30/04/1997",
+  createdAt,
+  startedAt,
+  finishedAt,
+  stoppedAt,
   status = Status.NEW,
   showStatusLabel = true,
 }) {

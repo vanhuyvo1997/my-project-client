@@ -21,7 +21,7 @@ export default function Page({}) {
   const [username, setUsername] = useState("");
   const [tasks, setTasks] = useState([]);
   const router = useRouter();
-  const [projectId, setProjectId] = useState(router.query.id);
+  const projectId = router.query.id;
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
@@ -31,7 +31,7 @@ export default function Page({}) {
 
   const [isShowDeleteDialog, setIsShowDeleteDialog] = useState(false);
   const [deletingTaskTitle, setDeletingTaskTitle] = useState("");
-  const [deletingTaskId, setDeletingTaskId] = useState(-1);
+  const [targetTaskId, setTargetTaskId] = useState(-1);
 
   const taskUrl =
     process.env.NEXT_PUBLIC_PROJECT_BASE_API + "/" + projectId + `/tasks`;
@@ -124,7 +124,7 @@ export default function Page({}) {
   };
 
   const handleDeleteTask = (id, title) => {
-    setDeletingTaskId(id);
+    setTargetTaskId(id);
     setDeletingTaskTitle(title);
     setIsShowDeleteDialog(true);
   };
@@ -132,7 +132,7 @@ export default function Page({}) {
   const deleteSelectedTask = async () => {
     setIsLoading(true);
     try {
-      const url = taskUrl + "/" + deletingTaskId
+      const url = taskUrl + "/" + targetTaskId
       const response = await fetchFromAuthenticatedUrl(url , "DELETE");
       if(response.ok){
         notifications.push(NotifyObject(NotifyType.SUCCESS, `Deleted task named "${deletingTaskTitle}" successfully`, deleteNotification));
@@ -174,10 +174,10 @@ export default function Page({}) {
             desciptions={e.description}
             status={e.status}
             createdAt={e.createdAt}
+            startedAt={e.startedAt}
+            finishedAt={e.finishedAt}
             subtasksNum={e.subtasksNum}
             onDelete={() => handleDeleteTask(e.id, e.title)}
-            notifications={notifications}
-            deleteNotification={deleteNotification}S
           />
         ))}
       </InfiniteScroll>

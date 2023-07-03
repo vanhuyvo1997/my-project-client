@@ -8,6 +8,8 @@ export default function TaskContent({
   desciptions = "This is descriptions",
   status,
   createdAt,
+  startedAt,
+  finishedAt,
   subtasksNum,
   onClickExpand,
   onDelete,
@@ -28,7 +30,7 @@ export default function TaskContent({
           <h5 className={styles.title}>{title}</h5>
           <p className={styles.desciptions}>{desciptions}</p>
           <div className={styles["other-info"]}>
-            <span className={styles["progress-bar"]} ><span className={styles["samll-text"]}>Status:</span> <TaskProgressBar status={status} createdAt={createdAt}/></span>
+            <span className={styles["progress-bar"]} ><span className={styles["samll-text"]}>Status:</span> <TaskProgressBar status={status} createdAt={createdAt} startedAt={startedAt} finishedAt={finishedAt}/></span>
             <span className={styles["samll-text"]}>
               Subtasks: <i>{subtasksNum}</i>
             </span>
@@ -41,10 +43,11 @@ export default function TaskContent({
           <Button onClick={onDelete} type={ButtonType.ICON_DLETE} content={"Delete"}/>
           <Button onClick={onDelete} type={ButtonType.ICON_EDIT} content={"Edit"}/>
         </DropdownMenu>
-        <button
+        <input
+          type="button"
           className={styles["expand-button"]}
           onClick={handleExpand}
-        ></button>
+        />
       </div>
     </div>
   );

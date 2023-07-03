@@ -11,6 +11,8 @@ export default function Subtask({
   stoppedAt,
   finishedAt,
   onDragStart,
+  onDragEnd,
+  onDelete,
 }) {
   const handleOnDragStart = (e) => {
     setTimeout(() => {
@@ -23,7 +25,7 @@ export default function Subtask({
     setTimeout(() => {
       e.target.style.display = "flex";
     }, 100);
-    
+    onDragEnd && onDragEnd();
   };
 
   return (
@@ -49,6 +51,7 @@ export default function Subtask({
         </div>
       </div>
       <div className={styles["subtask-status"]}>{status}</div>
+      <input onClick={onDelete} title="delete" className={styles["delete-button"]} type="button"/>
     </div>
   );
 }
